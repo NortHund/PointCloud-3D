@@ -35,14 +35,14 @@ class S3DIS(Dataset):
         # get all datapaths
         self.data_paths = []
         for area in areas:
-            self.data_paths += glob(os.path.join(area, '**\*.hdf5'), 
+            self.data_paths += glob(os.path.join(area, '**/*.hdf5'), 
                                     recursive=True)
 
         # get unique space identifiers (area_##\\spacename_##_)
         self.space_ids = []
         for fp in self.data_paths:
-            area, space = fp.split('\\')[-2:]
-            space_id = '\\'.join([area, '_'.join(space.split('_')[:2])]) + '_'
+            area, space = fp.split('/')[-2:]
+            space_id = '/'.join([area, '_'.join(space.split('_')[:2])]) + '_'
             self.space_ids.append(space_id)
 
         self.space_ids = list(set(self.space_ids))
@@ -50,6 +50,7 @@ class S3DIS(Dataset):
 
     def __getitem__(self, idx):
         # read data from hdf5
+        # print(self.data_paths[idx])
         space_data = pd.read_hdf(self.data_paths[idx], key='space_slice').to_numpy()
         points = space_data[:, :3] # xyz points
         targets = space_data[:, 3]    # integer categories
